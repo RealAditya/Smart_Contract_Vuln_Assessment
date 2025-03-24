@@ -71,7 +71,7 @@ The tool generates both individual reports for each contract and a consolidated 
 
 6. **Clone or download this repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/RealAditya/Smart_Contract_Vuln_Assessment
    cd SmartContract-vulnerability-analysis
    ```
 
