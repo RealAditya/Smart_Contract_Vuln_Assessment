@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contract Security Analysis Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1, h2, h3 { color: #2c3e50; }
+        .header { background-color: #3498db; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .summary { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .contract { background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 20px; }
+        .vulnerability { border-left: 4px solid #ddd; padding: 10px; margin: 10px 0; }
+        .critical { border-left-color: #e74c3c; }
+        .high { border-left-color: #e67e22; }
+        .medium { border-left-color: #f1c40f; }
+        .low { border-left-color: #3498db; }
+        .informational { border-left-color: #95a5a6; }
+        .severity { display: inline-block; padding: 3px 6px; border-radius: 3px; font-size: 12px; font-weight: bold; color: white; }
+        .severity.critical { background-color: #e74c3c; }
+        .severity.high { background-color: #e67e22; }
+        .severity.medium { background-color: #f1c40f; color: #333; }
+        .severity.low { background-color: #3498db; }
+        .severity.informational { background-color: #95a5a6; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        .summary-count { text-align: center; }
+        .toc { margin-bottom: 20px; }
+        .toc a { color: #3498db; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
+        pre { white-space: pre-wrap; background-color: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Contract Security Analysis Report</h1>
+            <p>Report generated on: 2025-03-24 22:05:49</p>
+            <p>Total contracts analyzed: 7</p>
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ol>
+                <li><a href="#summary">Vulnerability Summary</a></li>
+                <li><a href="#contracts">Contract Details</a>
+                    <ul>
+                        <li><a href="#contract-0">intoverunder.sol</a></li>
+                        <li><a href="#contract-1">sample.sol</a></li>
+                        <li><a href="#contract-2">unchecked call return.sol</a></li>
+                        <li><a href="#contract-3">reentrancy.sol</a></li>
+                        <li><a href="#contract-4">Lock.sol</a></li>
+                        <li><a href="#contract-5">unrestricted access.sol</a></li>
+                        <li><a href="#contract-6">MyContract.sol</a></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div id="summary" class="summary">
+            <h2>Vulnerability Summary</h2>
+            <table>
+                <tr>
+                    <th>Vulnerability</th>
+                    <th>Count</th>
+                </tr>
+
+                <tr>
+                    <td>solc-version (Informational)</td>
+                    <td class="summary-count">14</td>
+                </tr>
+                <tr>
+                    <td>External Call To User-Supplied Address (Low)</td>
+                    <td class="summary-count">5</td>
+                </tr>
+                <tr>
+                    <td>low-level-calls (Informational)</td>
+                    <td class="summary-count">5</td>
+                </tr>
+                <tr>
+                    <td>Transaction Order Dependence (Medium)</td>
+                    <td class="summary-count">4</td>
+                </tr>
+                <tr>
+                    <td>State access after external call (Medium)</td>
+                    <td class="summary-count">3</td>
+                </tr>
+                <tr>
+                    <td>reentrancy-eth (High)</td>
+                    <td class="summary-count">3</td>
+                </tr>
+                <tr>
+                    <td>immutable-states (Unknown)</td>
+                    <td class="summary-count">3</td>
+                </tr>
+                <tr>
+                    <td>timestamp (Low)</td>
+                    <td class="summary-count">2</td>
+                </tr>
+                <tr>
+                    <td>Unchecked return value from external call. (Medium)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+                <tr>
+                    <td>unchecked-lowlevel (Medium)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+                <tr>
+                    <td>Dependence on predictable environment variable (Low)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+                <tr>
+                    <td>Unprotected Ether Withdrawal (High)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+                <tr>
+                    <td>arbitrary-send-eth (High)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+                <tr>
+                    <td>naming-convention (Informational)</td>
+                    <td class="summary-count">1</td>
+                </tr>
+            </table>
+
+        </div>
+
+        <h2 id="contracts">Contract Details</h2>
+
+        <div id="contract-0" class="contract">
+            <h3>intoverunder.sol</h3>
+            <p>Total vulnerabilities: 7</p>
+
+            <h4>Mythril Findings (3)</h4>
+
+            <div class="vulnerability medium">
+                <h4>Transaction Order Dependence <span class="severity medium">Medium</span></h4>
+                <pre>The value of the call is dependent on balance or storage write
+This can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call</pre>
+            </div>
+
+            <div class="vulnerability medium">
+                <h4>State access after external call <span class="severity medium">Medium</span></h4>
+                <pre>Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>External Call To User-Supplied Address <span class="severity low">Low</span></h4>
+                <pre>A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.</pre>
+            </div>
+
+            <h4>Slither Findings (4)</h4>
+
+            <div class="vulnerability high">
+                <h4>reentrancy-eth <span class="severity high">High</span></h4>
+                <pre>Reentrancy in Sample.withdraw() (contracts/intoverunder.sol#16-25):
+	External calls:
+	- (success) = msg.sender.call{value: amount}() (contracts/intoverunder.sol#21)
+	State variables written after the call(s):
+	- balances[msg.sender] = 0 (contracts/intoverunder.sol#24)
+	Sample.balances (contracts/intoverunder.sol#5) can be used in cross function reentrancies:
+	- Sample.balances (contracts/intoverunder.sol#5)
+	- Sample.deposit() (contracts/intoverunder.sol#8-13)
+	- Sample.getBalance() (contracts/intoverunder.sol#27-29)
+	- Sample.withdraw() (contracts/intoverunder.sol#16-25)
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/intoverunder.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>low-level-calls <span class="severity informational">Informational</span></h4>
+                <pre>Low level call in Sample.withdraw() (contracts/intoverunder.sol#16-25):
+	- (success) = msg.sender.call{value: amount}() (contracts/intoverunder.sol#21)
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-1" class="contract">
+            <h3>sample.sol</h3>
+            <p>Total vulnerabilities: 5</p>
+
+            <h4>Mythril Findings (2)</h4>
+
+            <div class="vulnerability medium">
+                <h4>Transaction Order Dependence <span class="severity medium">Medium</span></h4>
+                <pre>The value of the call is dependent on balance or storage write
+This can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>External Call To User-Supplied Address <span class="severity low">Low</span></h4>
+                <pre>A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.</pre>
+            </div>
+
+            <h4>Slither Findings (3)</h4>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/sample.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>low-level-calls <span class="severity informational">Informational</span></h4>
+                <pre>Low level call in Sample.withdraw() (contracts/sample.sol#13-25):
+	- (success) = msg.sender.call{value: amount}() (contracts/sample.sol#23)
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-2" class="contract">
+            <h3>unchecked call return.sol</h3>
+            <p>Total vulnerabilities: 9</p>
+
+            <h4>Mythril Findings (4)</h4>
+
+            <div class="vulnerability medium">
+                <h4>Transaction Order Dependence <span class="severity medium">Medium</span></h4>
+                <pre>The value of the call is dependent on balance or storage write
+This can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call</pre>
+            </div>
+
+            <div class="vulnerability medium">
+                <h4>Unchecked return value from external call. <span class="severity medium">Medium</span></h4>
+                <pre>The return value of a message call is not checked.
+External calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.</pre>
+            </div>
+
+            <div class="vulnerability medium">
+                <h4>State access after external call <span class="severity medium">Medium</span></h4>
+                <pre>Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>External Call To User-Supplied Address <span class="severity low">Low</span></h4>
+                <pre>A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.</pre>
+            </div>
+
+            <h4>Slither Findings (5)</h4>
+
+            <div class="vulnerability high">
+                <h4>reentrancy-eth <span class="severity high">High</span></h4>
+                <pre>Reentrancy in Sample.withdraw() (contracts/unchecked call return.sol#13-23):
+	External calls:
+	- msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)
+	State variables written after the call(s):
+	- balances[msg.sender] = 0 (contracts/unchecked call return.sol#22)
+	Sample.balances (contracts/unchecked call return.sol#5) can be used in cross function reentrancies:
+	- Sample.balances (contracts/unchecked call return.sol#5)
+	- Sample.deposit() (contracts/unchecked call return.sol#8-10)
+	- Sample.getBalance() (contracts/unchecked call return.sol#26-28)
+	- Sample.withdraw() (contracts/unchecked call return.sol#13-23)
+</pre>
+            </div>
+
+            <div class="vulnerability medium">
+                <h4>unchecked-lowlevel <span class="severity medium">Medium</span></h4>
+                <pre>Sample.withdraw() (contracts/unchecked call return.sol#13-23) ignores return value by msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/unchecked call return.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>low-level-calls <span class="severity informational">Informational</span></h4>
+                <pre>Low level call in Sample.withdraw() (contracts/unchecked call return.sol#13-23):
+	- msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-3" class="contract">
+            <h3>reentrancy.sol</h3>
+            <p>Total vulnerabilities: 7</p>
+
+            <h4>Mythril Findings (3)</h4>
+
+            <div class="vulnerability medium">
+                <h4>Transaction Order Dependence <span class="severity medium">Medium</span></h4>
+                <pre>The value of the call is dependent on balance or storage write
+This can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call</pre>
+            </div>
+
+            <div class="vulnerability medium">
+                <h4>State access after external call <span class="severity medium">Medium</span></h4>
+                <pre>Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>External Call To User-Supplied Address <span class="severity low">Low</span></h4>
+                <pre>A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.</pre>
+            </div>
+
+            <h4>Slither Findings (4)</h4>
+
+            <div class="vulnerability high">
+                <h4>reentrancy-eth <span class="severity high">High</span></h4>
+                <pre>Reentrancy in Sample.withdraw() (contracts/reentrancy.sol#13-25):
+	External calls:
+	- (success) = msg.sender.call{value: amount}() (contracts/reentrancy.sol#20)
+	State variables written after the call(s):
+	- balances[msg.sender] = 0 (contracts/reentrancy.sol#24)
+	Sample.balances (contracts/reentrancy.sol#5) can be used in cross function reentrancies:
+	- Sample.balances (contracts/reentrancy.sol#5)
+	- Sample.deposit() (contracts/reentrancy.sol#8-10)
+	- Sample.getBalance() (contracts/reentrancy.sol#28-30)
+	- Sample.withdraw() (contracts/reentrancy.sol#13-25)
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/reentrancy.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>low-level-calls <span class="severity informational">Informational</span></h4>
+                <pre>Low level call in Sample.withdraw() (contracts/reentrancy.sol#13-25):
+	- (success) = msg.sender.call{value: amount}() (contracts/reentrancy.sol#20)
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-4" class="contract">
+            <h3>Lock.sol</h3>
+            <p>Total vulnerabilities: 7</p>
+
+            <h4>Mythril Findings (1)</h4>
+
+            <div class="vulnerability low">
+                <h4>Dependence on predictable environment variable <span class="severity low">Low</span></h4>
+                <pre>A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.</pre>
+            </div>
+
+            <h4>Slither Findings (6)</h4>
+
+            <div class="vulnerability low">
+                <h4>timestamp <span class="severity low">Low</span></h4>
+                <pre>Lock.withdraw() (contracts/Lock.sol#23-33) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp >= unlockTime,You can't withdraw yet) (contracts/Lock.sol#27)
+</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>timestamp <span class="severity low">Low</span></h4>
+                <pre>Lock.constructor(uint256) (contracts/Lock.sol#13-21) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp < _unlockTime,Unlock time should be in the future) (contracts/Lock.sol#14-17)
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/Lock.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>immutable-states <span class="severity low">Unknown</span></h4>
+                <pre>Lock.unlockTime (contracts/Lock.sol#8) should be immutable 
+</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>immutable-states <span class="severity low">Unknown</span></h4>
+                <pre>Lock.owner (contracts/Lock.sol#9) should be immutable 
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-5" class="contract">
+            <h3>unrestricted access.sol</h3>
+            <p>Total vulnerabilities: 7</p>
+
+            <h4>Mythril Findings (2)</h4>
+
+            <div class="vulnerability high">
+                <h4>Unprotected Ether Withdrawal <span class="severity high">High</span></h4>
+                <pre>Any sender can withdraw Ether from the contract account.
+Arbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>External Call To User-Supplied Address <span class="severity low">Low</span></h4>
+                <pre>A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.</pre>
+            </div>
+
+            <h4>Slither Findings (5)</h4>
+
+            <div class="vulnerability high">
+                <h4>arbitrary-send-eth <span class="severity high">High</span></h4>
+                <pre>Sample.withdrawAll() (contracts/unrestricted access.sol#18-22) sends eth to arbitrary user
+	Dangerous calls:
+	- (success) = msg.sender.call{value: address(this).balance}() (contracts/unrestricted access.sol#20)
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.28 (contracts/unrestricted access.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>low-level-calls <span class="severity informational">Informational</span></h4>
+                <pre>Low level call in Sample.withdrawAll() (contracts/unrestricted access.sol#18-22):
+	- (success) = msg.sender.call{value: address(this).balance}() (contracts/unrestricted access.sol#20)
+</pre>
+            </div>
+
+            <div class="vulnerability low">
+                <h4>immutable-states <span class="severity low">Unknown</span></h4>
+                <pre>Sample.owner (contracts/unrestricted access.sol#6) should be immutable 
+</pre>
+            </div>
+
+        </div>
+
+        <div id="contract-6" class="contract">
+            <h3>MyContract.sol</h3>
+            <p>Total vulnerabilities: 3</p>
+
+            <h4>Slither Findings (3)</h4>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>solc-0.8.28 is not recommended for deployment
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>solc-version <span class="severity informational">Informational</span></h4>
+                <pre>Pragma version^0.8.20 (contracts/MyContract.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16
+</pre>
+            </div>
+
+            <div class="vulnerability informational">
+                <h4>naming-convention <span class="severity informational">Informational</span></h4>
+                <pre>Parameter MyContract.setMessage(string)._newMessage (contracts/MyContract.sol#11) is not in mixedCase
+</pre>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>This report was generated by the Smart Contract Security Analysis tool.</p>
+        </footer>
+    </div>
+</body>
+</html>

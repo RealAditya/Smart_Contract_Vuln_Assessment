@@ -1,0 +1,369 @@
+{
+    "report_date": "2025-03-24 22:05:49",
+    "total_contracts_analyzed": 7,
+    "contracts": [
+        {
+            "name": "intoverunder.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "External Call To User-Supplied Address",
+                    "severity": "Low",
+                    "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Transaction Order Dependence",
+                    "severity": "Medium",
+                    "description": "The value of the call is dependent on balance or storage write\nThis can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call"
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "State access after external call",
+                    "severity": "Medium",
+                    "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+                },
+                {
+                    "tool": "Slither",
+                    "title": "reentrancy-eth",
+                    "severity": "High",
+                    "description": "Reentrancy in Sample.withdraw() (contracts/intoverunder.sol#16-25):\n\tExternal calls:\n\t- (success) = msg.sender.call{value: amount}() (contracts/intoverunder.sol#21)\n\tState variables written after the call(s):\n\t- balances[msg.sender] = 0 (contracts/intoverunder.sol#24)\n\tSample.balances (contracts/intoverunder.sol#5) can be used in cross function reentrancies:\n\t- Sample.balances (contracts/intoverunder.sol#5)\n\t- Sample.deposit() (contracts/intoverunder.sol#8-13)\n\t- Sample.getBalance() (contracts/intoverunder.sol#27-29)\n\t- Sample.withdraw() (contracts/intoverunder.sol#16-25)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/intoverunder.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "low-level-calls",
+                    "severity": "Informational",
+                    "description": "Low level call in Sample.withdraw() (contracts/intoverunder.sol#16-25):\n\t- (success) = msg.sender.call{value: amount}() (contracts/intoverunder.sol#21)\n"
+                }
+            ]
+        },
+        {
+            "name": "sample.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "External Call To User-Supplied Address",
+                    "severity": "Low",
+                    "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Transaction Order Dependence",
+                    "severity": "Medium",
+                    "description": "The value of the call is dependent on balance or storage write\nThis can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/sample.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "low-level-calls",
+                    "severity": "Informational",
+                    "description": "Low level call in Sample.withdraw() (contracts/sample.sol#13-25):\n\t- (success) = msg.sender.call{value: amount}() (contracts/sample.sol#23)\n"
+                }
+            ]
+        },
+        {
+            "name": "unchecked call return.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "External Call To User-Supplied Address",
+                    "severity": "Low",
+                    "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Transaction Order Dependence",
+                    "severity": "Medium",
+                    "description": "The value of the call is dependent on balance or storage write\nThis can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call"
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Unchecked return value from external call.",
+                    "severity": "Medium",
+                    "description": "The return value of a message call is not checked.\nExternal calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "State access after external call",
+                    "severity": "Medium",
+                    "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+                },
+                {
+                    "tool": "Slither",
+                    "title": "reentrancy-eth",
+                    "severity": "High",
+                    "description": "Reentrancy in Sample.withdraw() (contracts/unchecked call return.sol#13-23):\n\tExternal calls:\n\t- msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)\n\tState variables written after the call(s):\n\t- balances[msg.sender] = 0 (contracts/unchecked call return.sol#22)\n\tSample.balances (contracts/unchecked call return.sol#5) can be used in cross function reentrancies:\n\t- Sample.balances (contracts/unchecked call return.sol#5)\n\t- Sample.deposit() (contracts/unchecked call return.sol#8-10)\n\t- Sample.getBalance() (contracts/unchecked call return.sol#26-28)\n\t- Sample.withdraw() (contracts/unchecked call return.sol#13-23)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "unchecked-lowlevel",
+                    "severity": "Medium",
+                    "description": "Sample.withdraw() (contracts/unchecked call return.sol#13-23) ignores return value by msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/unchecked call return.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "low-level-calls",
+                    "severity": "Informational",
+                    "description": "Low level call in Sample.withdraw() (contracts/unchecked call return.sol#13-23):\n\t- msg.sender.call{value: amount}() (contracts/unchecked call return.sol#20)\n"
+                }
+            ]
+        },
+        {
+            "name": "reentrancy.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "External Call To User-Supplied Address",
+                    "severity": "Low",
+                    "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Transaction Order Dependence",
+                    "severity": "Medium",
+                    "description": "The value of the call is dependent on balance or storage write\nThis can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call"
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "State access after external call",
+                    "severity": "Medium",
+                    "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+                },
+                {
+                    "tool": "Slither",
+                    "title": "reentrancy-eth",
+                    "severity": "High",
+                    "description": "Reentrancy in Sample.withdraw() (contracts/reentrancy.sol#13-25):\n\tExternal calls:\n\t- (success) = msg.sender.call{value: amount}() (contracts/reentrancy.sol#20)\n\tState variables written after the call(s):\n\t- balances[msg.sender] = 0 (contracts/reentrancy.sol#24)\n\tSample.balances (contracts/reentrancy.sol#5) can be used in cross function reentrancies:\n\t- Sample.balances (contracts/reentrancy.sol#5)\n\t- Sample.deposit() (contracts/reentrancy.sol#8-10)\n\t- Sample.getBalance() (contracts/reentrancy.sol#28-30)\n\t- Sample.withdraw() (contracts/reentrancy.sol#13-25)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/reentrancy.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "low-level-calls",
+                    "severity": "Informational",
+                    "description": "Low level call in Sample.withdraw() (contracts/reentrancy.sol#13-25):\n\t- (success) = msg.sender.call{value: amount}() (contracts/reentrancy.sol#20)\n"
+                }
+            ]
+        },
+        {
+            "name": "Lock.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "Dependence on predictable environment variable",
+                    "severity": "Low",
+                    "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners."
+                },
+                {
+                    "tool": "Slither",
+                    "title": "timestamp",
+                    "severity": "Low",
+                    "description": "Lock.withdraw() (contracts/Lock.sol#23-33) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(block.timestamp >= unlockTime,You can't withdraw yet) (contracts/Lock.sol#27)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "timestamp",
+                    "severity": "Low",
+                    "description": "Lock.constructor(uint256) (contracts/Lock.sol#13-21) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(block.timestamp < _unlockTime,Unlock time should be in the future) (contracts/Lock.sol#14-17)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/Lock.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "immutable-states",
+                    "severity": "Unknown",
+                    "description": "Lock.unlockTime (contracts/Lock.sol#8) should be immutable \n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "immutable-states",
+                    "severity": "Unknown",
+                    "description": "Lock.owner (contracts/Lock.sol#9) should be immutable \n"
+                }
+            ]
+        },
+        {
+            "name": "unrestricted access.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Mythril",
+                    "title": "External Call To User-Supplied Address",
+                    "severity": "Low",
+                    "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+                },
+                {
+                    "tool": "Mythril",
+                    "title": "Unprotected Ether Withdrawal",
+                    "severity": "High",
+                    "description": "Any sender can withdraw Ether from the contract account.\nArbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds."
+                },
+                {
+                    "tool": "Slither",
+                    "title": "arbitrary-send-eth",
+                    "severity": "High",
+                    "description": "Sample.withdrawAll() (contracts/unrestricted access.sol#18-22) sends eth to arbitrary user\n\tDangerous calls:\n\t- (success) = msg.sender.call{value: address(this).balance}() (contracts/unrestricted access.sol#20)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.28 (contracts/unrestricted access.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "low-level-calls",
+                    "severity": "Informational",
+                    "description": "Low level call in Sample.withdrawAll() (contracts/unrestricted access.sol#18-22):\n\t- (success) = msg.sender.call{value: address(this).balance}() (contracts/unrestricted access.sol#20)\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "immutable-states",
+                    "severity": "Unknown",
+                    "description": "Sample.owner (contracts/unrestricted access.sol#6) should be immutable \n"
+                }
+            ]
+        },
+        {
+            "name": "MyContract.sol",
+            "vulnerabilities": [
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "solc-0.8.28 is not recommended for deployment\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "solc-version",
+                    "severity": "Informational",
+                    "description": "Pragma version^0.8.20 (contracts/MyContract.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16\n"
+                },
+                {
+                    "tool": "Slither",
+                    "title": "naming-convention",
+                    "severity": "Informational",
+                    "description": "Parameter MyContract.setMessage(string)._newMessage (contracts/MyContract.sol#11) is not in mixedCase\n"
+                }
+            ]
+        }
+    ],
+    "vulnerability_summary": [
+        {
+            "vulnerability": "solc-version (Informational)",
+            "count": 14
+        },
+        {
+            "vulnerability": "External Call To User-Supplied Address (Low)",
+            "count": 5
+        },
+        {
+            "vulnerability": "low-level-calls (Informational)",
+            "count": 5
+        },
+        {
+            "vulnerability": "Transaction Order Dependence (Medium)",
+            "count": 4
+        },
+        {
+            "vulnerability": "State access after external call (Medium)",
+            "count": 3
+        },
+        {
+            "vulnerability": "reentrancy-eth (High)",
+            "count": 3
+        },
+        {
+            "vulnerability": "immutable-states (Unknown)",
+            "count": 3
+        },
+        {
+            "vulnerability": "timestamp (Low)",
+            "count": 2
+        },
+        {
+            "vulnerability": "Unchecked return value from external call. (Medium)",
+            "count": 1
+        },
+        {
+            "vulnerability": "unchecked-lowlevel (Medium)",
+            "count": 1
+        },
+        {
+            "vulnerability": "Dependence on predictable environment variable (Low)",
+            "count": 1
+        },
+        {
+            "vulnerability": "Unprotected Ether Withdrawal (High)",
+            "count": 1
+        },
+        {
+            "vulnerability": "arbitrary-send-eth (High)",
+            "count": 1
+        },
+        {
+            "vulnerability": "naming-convention (Informational)",
+            "count": 1
+        }
+    ]
+}
